@@ -1,0 +1,82 @@
+
+
+.pageWrapper {
+  background-color: #f8fafc;
+  color: #1f2937;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.sidebarCollapsed {
+  width: 56px;
+}
+
+.sidebarExpanded {
+  width: 240px;
+}
+
+.mainContentExpanded {
+  margin-left: 240px;
+}
+
+.mainContentCollapsed {
+  margin-left: 56px;
+}
+
+.transitionAllSmooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardHoverEffect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.glassEffect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tableRowHover:hover {
+  background-color: #f8fafc;
+}
+
+.emotionTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.emotionTag.anxiety {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.emotionTag.stress {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.emotionTag.tired {
+  background-color: #e0e7ff;
+  color: #5b21b6;
+}
+
+.emotionTag.calm {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.emotionTag.peaceful {
+  background-color: #cffafe;
+  color: #0891b2;
+}
+
+.emotionTag.happy {
+  background-color: #fce7f3;
+  color: #be185d;
+}
+

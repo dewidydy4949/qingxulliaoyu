@@ -1,0 +1,74 @@
+
+
+.pageWrapper {
+  background-color: #f8fafc;
+  color: #1f2937;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.sidebarCollapsed {
+  width: 56px;
+}
+
+.sidebarExpanded {
+  width: 240px;
+}
+
+.mainContentExpanded {
+  margin-left: 240px;
+}
+
+.mainContentCollapsed {
+  margin-left: 56px;
+}
+
+.transitionAllSmooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardHoverEffect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.gradientBg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.glassEffect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.formInputFocus:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.feedbackTypeOption {
+  transition: all 0.2s ease;
+}
+
+.feedbackTypeOption.selected {
+  background-color: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.successMessage {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>情绪疗愈哄睡师</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
+<script>
+  new CozeWebSDK.WebChatClient({
+    config: {
+      bot_id: '7576153300107165730',
+    },
+    componentProps: {
+      title: 'Coze',
+    },
+    auth: {
+      type: 'token',
+      token: 'pat_xKPHdaCr1StNQIoMe0IxKdmZkClESL3hwlyht6xK95BJg2mqjyuHBzPUn92DumDf',
+      onRefreshToken: function () {
+        return 'pat_xKPHdaCr1StNQIoMe0IxKdmZkClESL3hwlyht6xK95BJg2mqjyuHBzPUn92DumDf'
+      }
+    }
+  });
+</script>
