@@ -38,97 +38,98 @@ const router = createBrowserRouter([
     path: '/',
     element: <Listener />,
     children: [
+      // 访问根路径时自动重定向到登录页
       {
-    path: '/',
-    element: <Navigate to='/login' replace={true} />,
-  },
+        index: true,
+        element: <Navigate to="/login" replace={true} />,
+      },
       {
-    path: '/login',
-    element: (
-      <ErrorBoundary>
-        <P_login />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'login',
+        element: (
+          <ErrorBoundary>
+            <P_login />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/home',
-    element: (
-      <ErrorBoundary>
-        <P_home />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'home',
+        element: (
+          <ErrorBoundary>
+            <P_home />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/emotion-select',
-    element: (
-      <ErrorBoundary>
-        <P_emotion_select />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'emotion-select',
+        element: (
+          <ErrorBoundary>
+            <P_emotion_select />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/result',
-    element: (
-      <ErrorBoundary>
-        <P_result />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'result',
+        element: (
+          <ErrorBoundary>
+            <P_result />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/history',
-    element: (
-      <ErrorBoundary>
-        <P_history />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'history',
+        element: (
+          <ErrorBoundary>
+            <P_history />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/collection',
-    element: (
-      <ErrorBoundary>
-        <P_collection />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'collection',
+        element: (
+          <ErrorBoundary>
+            <P_collection />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/settings',
-    element: (
-      <ErrorBoundary>
-        <P_settings />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'settings',
+        element: (
+          <ErrorBoundary>
+            <P_settings />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/feedback',
-    element: (
-      <ErrorBoundary>
-        <P_feedback />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'feedback',
+        element: (
+          <ErrorBoundary>
+            <P_feedback />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '/help',
-    element: (
-      <ErrorBoundary>
-        <P_help />
-      </ErrorBoundary>
-    ),
-    errorElement: <ErrorPage />,
-  },
+        path: 'help',
+        element: (
+          <ErrorBoundary>
+            <P_help />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
       {
-    path: '*',
-    element: <NotFoundPage />,
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
   },
-    ]
-  }
 ]);
 
 export default router;
