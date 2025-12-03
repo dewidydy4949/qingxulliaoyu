@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Audio files (should be provided by user)
+public/audio/*.mp3
+!public/audio/.gitkeep
