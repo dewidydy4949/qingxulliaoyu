@@ -64,6 +64,14 @@ const LoginPage: React.FC = () => {
   // 验证码倒计时状态
   const [registerCodeCountdown, setRegisterCodeCountdown] = useState(0);
   const [forgotCodeCountdown, setForgotCodeCountdown] = useState(0);
+  
+  // 存储生成的验证码（用于验证）
+  const [registerCode, setRegisterCode] = useState<string>('');
+  const [forgotCode, setForgotCode] = useState<string>('');
+  
+  // 显示验证码提示框
+  const [showCodeModal, setShowCodeModal] = useState(false);
+  const [codeModalMessage, setCodeModalMessage] = useState('');
 
   // 设置页面标题
   useEffect(() => {
@@ -159,8 +167,19 @@ const LoginPage: React.FC = () => {
       return;
     }
     
+    // 验证验证码
+    if (registerForm.code !== registerCode) {
+      alert('验证码错误，请重新获取');
+      return;
+    }
+    
     if (registerForm.password !== registerForm.confirm) {
       alert('两次输入的密码不一致');
+      return;
+    }
+    
+    if (registerForm.password.length < 6 || registerForm.password.length > 20) {
+      alert('密码长度应在6-20位之间');
       return;
     }
     
@@ -171,6 +190,9 @@ const LoginPage: React.FC = () => {
     
     console.log('注册信息:', registerForm);
     showSuccess('注册成功，正在跳转...');
+    
+    // 清空验证码
+    setRegisterCode('');
     
     setTimeout(() => {
       navigate('/home');
@@ -186,13 +208,32 @@ const LoginPage: React.FC = () => {
       return;
     }
     
+    // 验证验证码
+    if (forgotForm.code !== forgotCode) {
+      alert('验证码错误，请重新获取');
+      return;
+    }
+    
+    if (forgotForm.password.length < 6 || forgotForm.password.length > 20) {
+      alert('密码长度应在6-20位之间');
+      return;
+    }
+    
     console.log('找回密码信息:', forgotForm);
     showSuccess('密码重置成功，请重新登录');
+    
+    // 清空验证码
+    setForgotCode('');
     
     setTimeout(() => {
       hideSuccessModal();
       setCurrentForm('login');
     }, 1500);
+  };
+
+  // 生成6位随机验证码
+  const generateVerificationCode = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
   // 发送验证码
@@ -203,8 +244,23 @@ const LoginPage: React.FC = () => {
       return;
     }
     
-    console.log('发送注册验证码');
+    // 验证手机号格式（简单验证：11位数字）
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(registerForm.phone)) {
+      alert('请输入正确的手机号格式（11位数字）');
+      return;
+    }
+    
+    // 生成验证码
+    const code = generateVerificationCode();
+    setRegisterCode(code);
     setRegisterCodeCountdown(60);
+    
+    // 显示验证码提示（实际项目中应该通过短信发送）
+    setCodeModalMessage(`验证码已发送到 ${registerForm.phone}\n\n验证码：${code}\n\n（提示：这是演示模式，实际项目中会通过短信发送）`);
+    setShowCodeModal(true);
+    
+    console.log('注册验证码:', code);
   };
 
   const handleSendForgotCode = () => {
@@ -214,8 +270,23 @@ const LoginPage: React.FC = () => {
       return;
     }
     
-    console.log('发送找回密码验证码');
+    // 验证手机号格式
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(forgotForm.phone)) {
+      alert('请输入正确的手机号格式（11位数字）');
+      return;
+    }
+    
+    // 生成验证码
+    const code = generateVerificationCode();
+    setForgotCode(code);
     setForgotCodeCountdown(60);
+    
+    // 显示验证码提示
+    setCodeModalMessage(`验证码已发送到 ${forgotForm.phone}\n\n验证码：${code}\n\n（提示：这是演示模式，实际项目中会通过短信发送）`);
+    setShowCodeModal(true);
+    
+    console.log('找回密码验证码:', code);
   };
 
   // 模态框背景点击关闭
@@ -574,6 +645,30 @@ const LoginPage: React.FC = () => {
               className="w-full bg-primary text-white font-semibold py-3 px-6 rounded-xl hover:bg-opacity-90 transition-all"
             >
               确定
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 验证码提示模态框 */}
+      {showCodeModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setShowCodeModal(false)}
+        >
+          <div className="bg-white rounded-2xl p-8 mx-4 max-w-sm w-full text-center">
+            <div className="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fas fa-sms text-2xl text-primary"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">验证码已发送</h3>
+            <div className="text-text-secondary mb-6 whitespace-pre-line text-sm">
+              {codeModalMessage}
+            </div>
+            <button 
+              onClick={() => setShowCodeModal(false)}
+              className="w-full bg-primary text-white font-semibold py-3 px-6 rounded-xl hover:bg-opacity-90 transition-all"
+            >
+              我知道了
             </button>
           </div>
         </div>
