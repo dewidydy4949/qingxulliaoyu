@@ -230,6 +230,10 @@ const HomePage: React.FC = () => {
     navigate('/emotion-select');
   };
 
+  const handleHealingSpaceClick = () => {
+    navigate('/healing');
+  };
+
   const handleCollectionShortcutClick = () => {
     navigate('/collection');
   };
@@ -393,6 +397,22 @@ const HomePage: React.FC = () => {
                 <h3 className="font-semibold text-text-primary mb-2 text-lg">今日推荐</h3>
                 <p className="text-sm text-text-secondary mb-3 leading-relaxed">为您精选的疗愈内容</p>
                 <div className="text-2xl font-semibold text-tertiary">5</div>
+              </div>
+
+              {/* 心情治愈空间 - 毛玻璃效果 */}
+              <div 
+                onClick={handleHealingSpaceClick}
+                className={`${styles.glassCard} p-6 cursor-pointer`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                    <i className="fas fa-spa text-lg text-white"></i>
+                  </div>
+                  <i className="fas fa-arrow-right text-sm text-text-tertiary"></i>
+                </div>
+                <h3 className="font-semibold text-text-primary mb-2 text-lg">心情治愈空间</h3>
+                <p className="text-sm text-text-secondary mb-3 leading-relaxed">沉浸式音乐治愈体验</p>
+                <div className="text-lg font-medium bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">立即体验</div>
               </div>
 
               {/* 个性化设置 - 毛玻璃效果 */}

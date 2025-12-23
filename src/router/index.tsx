@@ -11,6 +11,7 @@ import P_collection from '../pages/p-collection';
 import P_settings from '../pages/p-settings';
 import P_feedback from '../pages/p-feedback';
 import P_help from '../pages/p-help';
+import P_healing from '../pages/p-healing';
 import NotFoundPage from './NotFoundPage';
 import ErrorPage from './ErrorPage';
 
@@ -120,6 +121,15 @@ const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <P_help />
+          </ErrorBoundary>
+        ),
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: 'healing',
+        element: (
+          <ErrorBoundary>
+            <P_healing />
           </ErrorBoundary>
         ),
         errorElement: <ErrorPage />,

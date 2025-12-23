@@ -1,0 +1,26 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.enter {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.enterActive {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.exitActive {
+  opacity: 0;
+  transform: translateX(-100px);
+}
