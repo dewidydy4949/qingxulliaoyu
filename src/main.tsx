@@ -14,41 +14,12 @@ window.onerror = function(message, source, lineno, colno, error) {
     colno,   // 发生错误的列号 (number)
     error    // 错误对象 (Error)
   });
-
-  if (!import.meta.env.DEV) {
-    return;
-  }
-  // send_error_message_to_parent_window 向父窗口发送错误信息
-  if (typeof window === 'object' && window.parent) {
-    window.parent.postMessage({
-      type: 'chux:error',
-      error: {
-        message: error.message || error.statusText,
-        stack: error.stack,
-      },
-    }, 'https://www.coze.cn');
-  }
   return true; 
 };
 
 window.addEventListener('unhandledrejection', function(event) {
   // event.reason 通常是导致拒绝的错误对象或值
   console.log('全局 unhandledrejection 捕获到 Promise 错误:', event.reason);
-
-  if (!import.meta.env.DEV) {
-    return;
-  }
-  // send_error_message_to_parent_window 向父窗口发送错误信息
-  if (typeof window === 'object' && window.parent) {
-    const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
-    window.parent.postMessage({
-      type: 'chux:error',
-      error: {
-        message: error.message || error.statusText,
-        stack: error.stack,
-      },
-    }, 'https://www.coze.cn');
-  }
 });
 
 createRoot(document.getElementById('root')!).render(

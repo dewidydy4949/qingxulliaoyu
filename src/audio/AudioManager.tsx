@@ -12,9 +12,11 @@ export interface AudioManagerContextType {
   isPlaying: boolean;
   volume: number;
   progress: number;
+  isMuted: boolean;
   tracks: AudioTrack[];
   play: (trackId: string) => void;
   pause: () => void;
+  toggleMute: () => void;
   setVolume: (volume: number) => void;
   seek: (progress: number) => void;
   loadTracks: (tracks: AudioTrack[]) => void;
@@ -35,22 +37,38 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [currentTrack, setCurrentTrack] = useState<AudioTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [tracks, setTracks] = useState<AudioTrack[]>([
     {
-      id: 'piano-forest-1',
-      name: '森林钢琴曲',
-      url: '/audio/piano-forest-1.mp3',
+      id: 'rain-ambient',
+      name: '雨声环境音',
+      url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg',
     },
     {
-      id: 'piano-meditation-1', 
-      name: '冥想钢琴曲',
-      url: '/audio/piano-meditation-1.mp3',
+      id: 'soft-piano',
+      name: '柔和钢琴曲',
+      url: 'https://actions.google.com/sounds/v1/ambiences/magical_chime.ogg',
     },
     {
-      id: 'piano-sleep-1',
-      name: '睡眠钢琴曲', 
-      url: '/audio/piano-sleep-1.mp3',
+      id: 'sleep-music',
+      name: '睡眠音乐',
+      url: 'https://actions.google.com/sounds/v1/ambiences/overnight_silence.ogg',
+    },
+    {
+      id: 'nature-sounds',
+      name: '自然声音',
+      url: 'https://actions.google.com/sounds/v1/weather/thunder_crack.ogg',
+    },
+    {
+      id: 'meditation',
+      name: '冥想音乐',
+      url: 'https://actions.google.com/sounds/v1/ambiences/rolling_brook.ogg',
+    },
+    {
+      id: 'relaxing-nature',
+      name: '放松自然音',
+      url: 'https://actions.google.com/sounds/v1/weather/wind.ogg',
     }
   ]);
 
@@ -111,6 +129,14 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
+  const toggleMute = () => {
+    if (audioRef.current) {
+      const newMutedState = !isMuted;
+      audioRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
+    }
+  };
+
   const setVolume = (newVolume: number) => {
     setVolumeState(newVolume);
   };
@@ -132,9 +158,11 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isPlaying,
     volume,
     progress,
+    isMuted,
     tracks,
     play,
     pause,
+    toggleMute,
     setVolume,
     seek,
     loadTracks,

@@ -50,13 +50,12 @@ const ImmersiveHealingPage: React.FC = () => {
   const { play, pause, isPlaying, isMuted, toggleMute } = useAudioManager();
   
   const [moodId] = useState(searchParams.get('mood') || 'overthinking');
-  const [healingText, setHealingText] = useState('正在接收来自星空的信号...');
   const [displayedText, setDisplayedText] = useState('');
-  const [isLoadingText, setIsLoadingText] = useState(true);
   const [showInputOption, setShowInputOption] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   const moodInfo = moodConfig[moodId] || moodConfig.overthinking;
 
@@ -69,22 +68,32 @@ const ImmersiveHealingPage: React.FC = () => {
       setIsContentVisible(true);
     }, 1000);
 
-    // 自动开始播放音乐
-    setTimeout(() => {
-      play(moodInfo.audioTrack);
-    }, 2000);
+    // 等待用户交互后播放音乐
+    if (hasUserInteracted) {
+      const playAudioWithDelay = async () => {
+        try {
+          await play(moodInfo.audioTrack);
+        } catch (error) {
+          console.error('Audio play failed:', error);
+          // 如果播放失败，静音后重试
+          setTimeout(() => {
+            play(moodInfo.audioTrack);
+          }, 100);
+        }
+      };
+      
+      setTimeout(playAudioWithDelay, 500);
+    }
 
     return () => { 
       document.title = originalTitle;
       pause(); // 页面离开时停止音乐
     };
-  }, []);
+  }, [hasUserInteracted, moodInfo.audioTrack]);
 
   // AI 文案获取和打字机效果
   useEffect(() => {
     const fetchAndDisplayText = async () => {
-      setIsLoadingText(true);
-      
       try {
         const response: HealingTextResponse = await fetchHealingText({
           mood: moodId,
@@ -99,8 +108,6 @@ const ImmersiveHealingPage: React.FC = () => {
       } catch (error) {
         console.error('Failed to fetch healing text:', error);
         await typewriterEffect('深夜的星光，正温柔地注视着你。');
-      } finally {
-        setIsLoadingText(false);
       }
     };
 
@@ -120,6 +127,12 @@ const ImmersiveHealingPage: React.FC = () => {
     setIsTyping(false);
   };
 
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
+  };
+
   const handleBackToMoods = () => {
     navigate('/home');
   };
@@ -131,7 +144,6 @@ const ImmersiveHealingPage: React.FC = () => {
       setUserInput('');
       
       setDisplayedText('');
-      setIsLoadingText(true);
       setIsTyping(false);
 
       try {
@@ -150,13 +162,17 @@ const ImmersiveHealingPage: React.FC = () => {
         console.error('Failed to fetch healing response:', error);
         await typewriterEffect('谢谢你分享这些，我在这里静静地陪伴着你。');
       } finally {
-        setIsLoadingText(false);
+        // 清理完成
       }
     }
   };
 
   return (
-    <div className={`${styles.immersiveHealing} min-h-screen relative overflow-hidden`}>
+    <div 
+      className={`${styles.immersiveHealing} min-h-screen relative overflow-hidden`}
+      onClick={handleUserInteraction}
+      onTouchStart={handleUserInteraction}
+    >
       {/* 背景视频/图片 */}
       <div className={styles.backgroundContainer}>
         <div className={`${styles.backgroundOverlay} ${styles[`bg-${moodInfo.bgVideo}`]}`} />
@@ -165,11 +181,15 @@ const ImmersiveHealingPage: React.FC = () => {
 
       {/* 音频控制按钮 */}
       <button
-        onClick={toggleMute}
-        className={`${styles.audioButton} ${isPlaying ? styles.active : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleMute();
+        }}
+        className={`${styles.audioButton} ${isPlaying ? styles.active : ''} ${!hasUserInteracted ? styles.pulse : ''}`}
         aria-label={isMuted ? '开启声音' : '静音'}
       >
-        <i className={`fas ${isMuted ? 'fa-volume-mute' : 'fa-volume-up'}`}></i>
+        <i className={`fas ${isMuted || !isPlaying ? 'fa-volume-mute' : 'fa-volume-up'}`}></i>
+        {!hasUserInteracted && <span className={styles.audioHint}>点击开启声音</span>}
       </button>
 
       {/* 返回按钮 */}

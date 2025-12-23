@@ -1,27 +1,12 @@
 // src/pages/ErrorPage.tsx
 import { useRouteError, useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
 
 export default function ErrorPage() {
   const error = useRouteError() as any; // 类型可以更具体
   const navigate = useNavigate();
   console.error(error);
 
-  useEffect(() => {
-    if (!import.meta.env.DEV) {
-      return;
-    }
-    // send_error_message_to_parent_window 向父窗口发送错误信息
-    if (typeof window === 'object' && window.parent) {
-      window.parent.postMessage({
-        type: 'chux:error',
-        error: {
-          message: error.message || error.statusText,
-          stack: error.stack,
-        },
-      }, 'https://www.coze.cn');
-    }
-  }, [error]);
+
 
   const goBack = () => {
     navigate(-1);
