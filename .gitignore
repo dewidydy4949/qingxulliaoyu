@@ -25,4 +25,3 @@ dist-ssr
 
 # Audio files (should be provided by user)
 public/audio/*.mp3
-!public/audio/.gitkeep
