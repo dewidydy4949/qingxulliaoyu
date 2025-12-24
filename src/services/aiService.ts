@@ -1,9 +1,6 @@
-import Groq from 'groq-sdk';
-
-const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY || '',
-  dangerouslyAllowBrowser: true,
-});
+// 直接使用fetch调用API，避免SDK的CORS问题
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
+const API_BASE_URL = '/api/groq/openai/v1'; // 使用Vite代理
 
 export interface HealingTextRequest {
   mood: string;
@@ -84,8 +81,7 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     let systemPrompt: string;
 
     // 检查 API Key 是否存在
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY || '';
-    if (!apiKey) {
+    if (!GROQ_API_KEY) {
       console.error('❌ Groq API Key 未配置！请在 .env 文件中设置 VITE_GROQ_API_KEY');
       return {
         text: '网络有点拥挤，请重试',
@@ -111,28 +107,46 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
 
     console.log('🔍 系统提示词长度:', systemPrompt.length);
     console.log('🔍 用户提示词长度:', userPrompt.length);
+    console.log('🔍 API URL:', API_BASE_URL);
 
-    const response = await groq.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt,
-        },
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-      model: 'llama3-8b-8192',
-      temperature: 0.8,
-      max_tokens: 400,
-      stream: false,
+    // 使用fetch直接调用API
+    const response = await fetch(`${API_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt,
+          },
+          {
+            role: 'user',
+            content: userPrompt,
+          },
+        ],
+        model: 'llama-3.3-70b-versatile',
+        temperature: 0.8,
+        max_tokens: 400,
+        stream: false,
+      }),
     });
 
-    console.log('✅ Groq API 响应成功！');
-    console.log('📊 响应数据:', JSON.stringify(response, null, 2));
+    console.log('📡 API 响应状态:', response.status);
 
-    const healingText = response.choices[0]?.message?.content?.trim() || '';
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ API 响应错误:', errorText);
+      throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Groq API 响应成功！');
+    console.log('📊 响应数据:', JSON.stringify(data, null, 2));
+
+    const healingText = data.choices[0]?.message?.content?.trim() || '';
     console.log('💬 生成的疗愈文本:', healingText);
 
     return {
@@ -143,10 +157,6 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     console.error('❌ Groq API 错误详情:', error);
     console.error('❌ 错误类型:', error.constructor.name);
     console.error('❌ 错误消息:', error.message);
-    if (error.response) {
-      console.error('❌ API 响应状态:', error.response.status);
-      console.error('❌ API 响应数据:', error.response.data);
-    }
 
     // 返回优雅的降级文案
     const fallbackTexts = [
