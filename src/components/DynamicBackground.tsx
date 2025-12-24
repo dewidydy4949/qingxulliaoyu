@@ -14,7 +14,7 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
 }) => {
   const [mounted, setMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {

@@ -180,7 +180,7 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
             resolve();
           };
 
-          const handleError = (e: any) => {
+          const handleError = () => {
             audio.removeEventListener('canplay', handleCanPlay);
             audio.removeEventListener('error', handleError);
             reject(new Error(`音频加载失败: ${audio.error?.message || '未知错误'}`));

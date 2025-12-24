@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styles from './styles.module.css';
 import { useAudioManager } from '../../audio/AudioManager';
 import { fetchHealingText } from '../../services/aiService';
 import DynamicBackground from '../../components/DynamicBackground';
@@ -158,7 +157,8 @@ const ImmersiveHealingPage: React.FC = () => {
         setIsLoading(true);
         // 使用子标签中文描述作为额外语境，让回复更贴近用户当下的具体情绪
         const subTagContext = subTagId ? (subTagMapping[subTagId] || '') : '';
-        const text = await fetchHealingText(moodId, subTagContext);
+        const response = await fetchHealingText({ mood: moodId, reason: subTagContext });
+        const text = response.text;
         setHealingText(text);
         setIsLoading(false);
         
@@ -261,9 +261,14 @@ const ImmersiveHealingPage: React.FC = () => {
 
       // 第二步：调用 AI 服务，附带子标签上下文
       const subTagContext = subTagId ? (subTagMapping[subTagId] || '') : '';
-      const text = await fetchHealingText(moodId, `${subTagContext ? `[${subTagContext}] ` : ''}${inputText}`);
+      const response = await fetchHealingText({ 
+        mood: moodId, 
+        reason: subTagContext,
+        userInput: `${subTagContext ? `[${subTagContext}] ` : ''}${inputText}`
+      });
 
       // 第三步：更新显示文字，关闭加载状态
+      const text = response.text;
       setHealingText(text);
       setIsLoading(false);
       setDisplayedText('');
