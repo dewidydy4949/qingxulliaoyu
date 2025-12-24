@@ -43,37 +43,37 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // 使用稳定的CDN音频源（SoundHelix测试音频，免费且稳定）
+  // 使用本地音频文件（无CORS问题，稳定性最高）
   const [tracks] = useState<AudioTrack[]>([
     {
       id: 'rain-ambient',
-      name: '雨声环境音',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      name: '森林钢琴曲',
+      url: '/audio/piano-forest-1.mp3',
     },
     {
       id: 'soft-piano',
-      name: '柔和钢琴曲',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      name: '冥想钢琴曲',
+      url: '/audio/piano-meditation-1.mp3',
     },
     {
       id: 'sleep-music',
-      name: '睡眠音乐',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+      name: '睡眠钢琴曲',
+      url: '/audio/piano-sleep-1.mp3',
     },
     {
       id: 'nature-sounds',
-      name: '自然声音',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+      name: '森林钢琴曲',
+      url: '/audio/piano-forest-1.mp3',
     },
     {
       id: 'meditation',
-      name: '冥想音乐',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+      name: '冥想钢琴曲',
+      url: '/audio/piano-meditation-1.mp3',
     },
     {
       id: 'relaxing-nature',
-      name: '放松自然音',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+      name: '睡眠钢琴曲',
+      url: '/audio/piano-sleep-1.mp3',
     }
   ]);
 

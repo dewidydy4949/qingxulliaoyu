@@ -83,6 +83,8 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     // 检查 API Key 是否存在
     if (!GROQ_API_KEY) {
       console.error('❌ Groq API Key 未配置！请在 .env 文件中设置 VITE_GROQ_API_KEY');
+      console.error('🔍 当前 GROQ_API_KEY 值:', GROQ_API_KEY);
+      console.error('🔍 import.meta.env.VITE_GROQ_API_KEY 值:', import.meta.env.VITE_GROQ_API_KEY);
       return {
         text: '网络有点拥挤，请重试',
         success: false,
@@ -90,6 +92,7 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
       };
     }
 
+    console.log('🌟 API Key 已加载:', GROQ_API_KEY.substring(0, 20) + '...');
     console.log('🌟 正在调用 Groq API...');
     console.log('📝 Mood:', mood);
     console.log('📝 Reason:', reason);
