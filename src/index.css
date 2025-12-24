@@ -149,7 +149,8 @@
 
   /* 高科技输入框样式 */
   .tech-input {
-    @apply w-full px-4 py-3 rounded-xl text-white bg-white/5 border border-white/10;
+    @apply w-full px-4 py-3 rounded-xl text-white border border-white/10;
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     font-size: 0.95rem;
@@ -160,11 +161,11 @@
   }
   
   .tech-input:focus {
-    @apply outline-none border-blue-400/50 bg-white/8;
+    @apply outline-none border-blue-400/50;
     box-shadow: 
       0 0 0 3px rgba(59, 130, 246, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
   }
 
   /* 发光边框样式 */
