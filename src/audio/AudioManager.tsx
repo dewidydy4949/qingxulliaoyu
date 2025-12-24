@@ -43,37 +43,37 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // 使用可靠的CDN音频源（Jamendo免费音乐）
+  // 使用稳定的CDN音频源（SoundHelix测试音频，免费且稳定）
   const [tracks] = useState<AudioTrack[]>([
     {
       id: 'rain-ambient',
       name: '雨声环境音',
-      url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     },
     {
       id: 'soft-piano',
       name: '柔和钢琴曲',
-      url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_5b29d689f9.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     },
     {
       id: 'sleep-music',
       name: '睡眠音乐',
-      url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
     },
     {
       id: 'nature-sounds',
       name: '自然声音',
-      url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
     },
     {
       id: 'meditation',
       name: '冥想音乐',
-      url: 'https://cdn.pixabay.com/download/audio/2022/01/26/audio_d339a7b9f8.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
     },
     {
       id: 'relaxing-nature',
       name: '放松自然音',
-      url: 'https://cdn.pixabay.com/download/audio/2022/02/07/audio_849f459c5e.mp3',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
     }
   ]);
 
