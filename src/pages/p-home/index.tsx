@@ -131,7 +131,7 @@ const FlowBotHome: React.FC = () => {
   const [currentTime, setCurrentTime] = useState('');
   const [greeting, setGreeting] = useState({ title: '', subtitle: '' });
   const navigate = useNavigate();
-  const { unlockAndPlay, fadeInPlay } = useAudioManager();
+  const { unlockAndPlay } = useAudioManager();
 
   // 情绪到音频轨道的映射
   const moodAudioMapping: Record<string, string> = {

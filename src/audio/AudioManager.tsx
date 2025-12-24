@@ -44,7 +44,7 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [progress, setProgress] = useState(0);
 
   // 使用测试音频链接（雨声白噪音）和本地音频文件作为备用
-  const [tracks] = useState<AudioTrack[]>([
+  const [tracks, setTracks] = useState<AudioTrack[]>([
     {
       id: 'rain-ambient',
       name: '雨声白噪音',

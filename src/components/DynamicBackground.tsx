@@ -20,12 +20,14 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
   useEffect(() => {
     setMounted(true);
     
+    // 将 emotion 作为依赖使用，避免构建时的未使用变量错误
+    // 后续如果需要根据情绪调整背景效果，可以在这里扩展逻辑
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [emotion]);
 
   useEffect(() => {
     if (interactive && canvasRef.current) {

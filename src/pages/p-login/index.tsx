@@ -161,7 +161,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+    <div className={`relative min-h-screen flex items-center justify-center p-4 overflow-hidden ${styles.background || ''}`}>
       {/* 高科技背景粒子效果 */}
       <div className="particle-container">
         {[...Array(30)].map((_, i) => (

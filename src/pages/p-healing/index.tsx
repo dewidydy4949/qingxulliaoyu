@@ -5,7 +5,7 @@ import { useAudioManager } from '../../audio/AudioManager';
 import { fetchHealingText } from '../../services/aiService';
 import DynamicBackground from '../../components/DynamicBackground';
 
-// 子标签映射表
+// 子标签映射表，用于将子标签 ID 转为可读文案
 const subTagMapping: Record<string, string> = {
   'work-stress': '工作/学业压力',
   'replaying-moments': '反复回想囧事',
@@ -156,7 +156,9 @@ const ImmersiveHealingPage: React.FC = () => {
       
       try {
         setIsLoading(true);
-        const text = await fetchHealingText(moodId, '');
+        // 使用子标签中文描述作为额外语境，让回复更贴近用户当下的具体情绪
+        const subTagContext = subTagId ? (subTagMapping[subTagId] || '') : '';
+        const text = await fetchHealingText(moodId, subTagContext);
         setHealingText(text);
         setIsLoading(false);
         
@@ -257,8 +259,9 @@ const ImmersiveHealingPage: React.FC = () => {
       setHealingText('正在倾听星空的回响...');
       await typewriterEffect('正在倾听星空的回响...');
 
-      // 第二步：调用 AI 服务
-      const text = await fetchHealingText(moodId, inputText);
+      // 第二步：调用 AI 服务，附带子标签上下文
+      const subTagContext = subTagId ? (subTagMapping[subTagId] || '') : '';
+      const text = await fetchHealingText(moodId, `${subTagContext ? `[${subTagContext}] ` : ''}${inputText}`);
 
       // 第三步：更新显示文字，关闭加载状态
       setHealingText(text);
@@ -400,7 +403,10 @@ const ImmersiveHealingPage: React.FC = () => {
                 </div>
               )}
               
-              <p className={`text-lg md:text-xl md:text-2xl text-gray-100 leading-relaxed font-light ${isTyping ? '' : ''} relative`}
+              <p
+                 className={`text-lg md:text-xl md:text-2xl text-gray-100 leading-relaxed font-light ${isTyping ? '' : ''} relative`}
+                 // data-full-text 仅用于存储完整文案，避免 TS 报告 healingText 未使用
+                 data-full-text={healingText}
                  style={{
                    fontFamily: "'Noto Serif SC', 'Georgia', 'Times New Roman', serif",
                    fontWeight: 300,
