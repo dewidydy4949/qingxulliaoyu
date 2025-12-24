@@ -43,37 +43,37 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // 使用稳定的 Google 官方雨声音频源
+  // 使用可靠的CDN音频源（Jamendo免费音乐）
   const [tracks] = useState<AudioTrack[]>([
     {
       id: 'rain-ambient',
       name: '雨声环境音',
-      url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3',
     },
     {
       id: 'soft-piano',
       name: '柔和钢琴曲',
-      url: 'https://actions.google.com/sounds/v1/ambiences/magical_chime.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_5b29d689f9.mp3',
     },
     {
       id: 'sleep-music',
       name: '睡眠音乐',
-      url: 'https://actions.google.com/sounds/v1/ambiences/overnight_silence.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3',
     },
     {
       id: 'nature-sounds',
       name: '自然声音',
-      url: 'https://actions.google.com/sounds/v1/weather/thunder_crack.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3',
     },
     {
       id: 'meditation',
       name: '冥想音乐',
-      url: 'https://actions.google.com/sounds/v1/ambiences/rolling_brook.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/01/26/audio_d339a7b9f8.mp3',
     },
     {
       id: 'relaxing-nature',
       name: '放松自然音',
-      url: 'https://actions.google.com/sounds/v1/weather/wind.ogg',
+      url: 'https://cdn.pixabay.com/download/audio/2022/02/07/audio_849f459c5e.mp3',
     }
   ]);
 
@@ -122,6 +122,7 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       // 设置音频源
       audioRef.current.src = track.url;
+      audioRef.current.crossOrigin = 'anonymous'; // 添加跨域支持
       setCurrentTrack(track);
       setProgress(0);
 
@@ -134,14 +135,18 @@ export const AudioManagerProvider: React.FC<{ children: React.ReactNode }> = ({ 
             console.log('✅ 音频播放成功');
             setIsPlaying(true);
           })
-          .catch(error => {
+          .catch((error: any) => {
             console.error('❌ 音频播放失败:', error);
+            console.error('❌ 错误名称:', error.name);
+            console.error('❌ 错误消息:', error.message);
             setIsPlaying(false);
+            alert('音频播放失败，请检查网络连接或更换音频');
           });
       }
     } catch (error) {
       console.error('❌ 播放音频时出错:', error);
       setIsPlaying(false);
+      alert('音频播放失败，请检查网络连接或更换音频');
     }
   };
 

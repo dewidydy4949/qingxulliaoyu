@@ -10,6 +10,13 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: true,
     hmr: {
       path: '/ws',
+    },
+    proxy: {
+      '/api/groq': {
+        target: 'https://api.groq.com',
+        changeOrigin: true,
+        secure: true,
+      }
     }
   },
 }));
