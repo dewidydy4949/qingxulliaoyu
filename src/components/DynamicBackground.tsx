@@ -86,15 +86,52 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 绘制深色背景渐变
+      // 绘制深色背景渐变（梦境感深色背景）
       const gradient = ctx.createRadialGradient(
         canvas.width / 2, canvas.height / 2, 0,
         canvas.width / 2, canvas.height / 2, canvas.width
       );
-      gradient.addColorStop(0, '#0a0f1e');
-      gradient.addColorStop(0.5, '#050810');
+      gradient.addColorStop(0, '#0a0a1a');
+      gradient.addColorStop(0.3, '#050510');
+      gradient.addColorStop(0.6, '#020208');
       gradient.addColorStop(1, '#000000');
       ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 绘制缓慢移动的星云/极光效果
+      const time = Date.now() * 0.0003; // 极慢的移动速度
+      
+      // 星云层1 - 紫色星云
+      const nebula1X = canvas.width / 2 + Math.sin(time) * canvas.width * 0.2;
+      const nebula1Y = canvas.height / 2 + Math.cos(time * 0.7) * canvas.height * 0.15;
+      const nebula1Gradient = ctx.createRadialGradient(nebula1X, nebula1Y, 0, nebula1X, nebula1Y, canvas.width * 0.6);
+      nebula1Gradient.addColorStop(0, 'rgba(139, 92, 246, 0.15)');
+      nebula1Gradient.addColorStop(0.3, 'rgba(99, 102, 241, 0.08)');
+      nebula1Gradient.addColorStop(0.6, 'rgba(59, 130, 246, 0.04)');
+      nebula1Gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = nebula1Gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 星云层2 - 蓝色极光
+      const nebula2X = canvas.width * 0.3 + Math.cos(time * 0.5) * canvas.width * 0.15;
+      const nebula2Y = canvas.height * 0.7 + Math.sin(time * 0.8) * canvas.height * 0.2;
+      const nebula2Gradient = ctx.createRadialGradient(nebula2X, nebula2Y, 0, nebula2X, nebula2Y, canvas.width * 0.5);
+      nebula2Gradient.addColorStop(0, 'rgba(59, 130, 246, 0.12)');
+      nebula2Gradient.addColorStop(0.4, 'rgba(37, 99, 235, 0.06)');
+      nebula2Gradient.addColorStop(0.8, 'rgba(29, 78, 216, 0.02)');
+      nebula2Gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = nebula2Gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 星云层3 - 粉色光晕（呼吸感）
+      const breathScale = 1 + Math.sin(time * 1.2) * 0.15; // 呼吸效果
+      const nebula3X = canvas.width * 0.7 + Math.sin(time * 0.6) * canvas.width * 0.1;
+      const nebula3Y = canvas.height * 0.3 + Math.cos(time * 0.9) * canvas.height * 0.12;
+      const nebula3Gradient = ctx.createRadialGradient(nebula3X, nebula3Y, 0, nebula3X, nebula3Y, canvas.width * 0.4 * breathScale);
+      nebula3Gradient.addColorStop(0, 'rgba(236, 72, 153, 0.1)');
+      nebula3Gradient.addColorStop(0.5, 'rgba(219, 39, 119, 0.05)');
+      nebula3Gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = nebula3Gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // 更新和绘制粒子

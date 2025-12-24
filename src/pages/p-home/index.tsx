@@ -129,6 +129,7 @@ const FlowBotHome: React.FC = () => {
   const [currentMoodForSubTags, setCurrentMoodForSubTags] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const [greeting, setGreeting] = useState({ title: '', subtitle: '' });
   const navigate = useNavigate();
   const { unlockAndPlay, fadeInPlay } = useAudioManager();
 
@@ -148,19 +149,52 @@ const FlowBotHome: React.FC = () => {
     return () => { document.title = originalTitle; };
   }, []);
 
+  // 获取北京时间并更新时间和问候语
   useEffect(() => {
-    const updateTime = () => {
+    const updateTimeAndGreeting = () => {
+      // 获取北京时间
       const now = new Date();
-      const timeString = now.toLocaleTimeString('zh-CN', { 
-        hour: '2-digit', 
+      const formatter = new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: false 
+        hour12: false
       });
+      
+      const parts = formatter.formatToParts(now);
+      const hours = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10);
+      const minutes = parseInt(parts.find(p => p.type === 'minute')?.value || '0', 10);
+      
+      // 格式化时间显示 HH:mm
+      const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       setCurrentTime(timeString);
+      
+      // 根据时间段设置问候语
+      if (hours >= 5 && hours < 12) {
+        // 05:00 - 11:59: 早晨
+        setGreeting({
+          title: '早安，新的一天开始了',
+          subtitle: '无论昨夜如何，今天都是新的开始'
+        });
+      } else if (hours >= 12 && hours < 18) {
+        // 12:00 - 17:59: 午后
+        setGreeting({
+          title: '午后，给自己喘口气的间隙',
+          subtitle: '累了吗？在这里稍微停靠一下'
+        });
+      } else {
+        // 18:00 - 04:59: 夜晚
+        setGreeting({
+          title: '夜深了，卸下防备吧',
+          subtitle: '今晚，月光陪你入睡'
+        });
+      }
     };
     
-    updateTime();
-    const timeInterval = setInterval(updateTime, 60000);
+    // 立即执行一次
+    updateTimeAndGreeting();
+    // 每秒更新一次
+    const timeInterval = setInterval(updateTimeAndGreeting, 1000);
     
     return () => clearInterval(timeInterval);
   }, []);
@@ -205,8 +239,65 @@ const FlowBotHome: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-6 py-12 overflow-hidden">
-      {/* 高科技背景 */}
+    <div 
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 py-12 overflow-hidden"
+      style={{
+        background: 'radial-gradient(ellipse at center, #0a0e1a 0%, #050810 40%, #000000 100%)'
+      }}
+    >
+      {/* 科技感网格背景 */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+          animation: 'gridMove 15s linear infinite'
+        }}
+      />
+      
+      {/* 科技感数据流效果 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`stream-${i}`}
+            className="absolute"
+            style={{
+              left: `${(i * 12.5) + 5}%`,
+              top: '-10%',
+              width: '2px',
+              height: '20%',
+              background: 'linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.6), transparent)',
+              filter: 'blur(1px)',
+              animation: `dataFlow ${3 + (i % 3) * 0.5}s linear infinite`,
+              animationDelay: `${i * 0.5}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* 科技感光晕效果 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full filter blur-3xl opacity-20"
+          style={{
+            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)',
+            animation: 'glowPulse 4s ease-in-out infinite'
+          }}
+        />
+        <div 
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full filter blur-3xl opacity-15"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)',
+            animation: 'glowPulse 5s ease-in-out infinite',
+            animationDelay: '2s'
+          }}
+        />
+      </div>
+
+      {/* 高科技背景 - 科技感粒子效果 */}
       <div className="particle-container">
         {[...Array(40)].map((_, i) => (
           <div 
@@ -215,29 +306,37 @@ const FlowBotHome: React.FC = () => {
             style={{
               left: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${8 + Math.random() * 6}s`
+              animationDuration: `${8 + Math.random() * 6}s`,
+              background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.8))',
+              boxShadow: '0 0 8px rgba(59, 130, 246, 0.6), 0 0 12px rgba(139, 92, 246, 0.4)'
             }}
           />
         ))}
       </div>
 
-      {/* 动态网格背景 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-          animation: 'gridMove 12s linear infinite'
-        }} />
-      </div>
-
-      {/* 光效装饰 */}
+      {/* 动态星云背景层 - 缓慢移动的梦境感背景 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full filter blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '3s'}} />
-        <div className="absolute top-1/2 right-1/3 w-[500px] h-[500px] bg-pink-500/5 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '5s'}} />
+        {/* 缓慢移动的星云效果 */}
+        <div 
+          className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full filter blur-3xl animate-float-slow"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 40%, transparent 70%)'
+          }}
+        />
+        <div 
+          className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full filter blur-3xl animate-float-slow-reverse"
+          style={{
+            background: 'radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, rgba(139, 92, 246, 0.06) 40%, transparent 70%)',
+            animationDelay: '3s'
+          }}
+        />
+        <div 
+          className="absolute top-1/2 right-1/3 w-[700px] h-[700px] rounded-full filter blur-3xl animate-breathe"
+          style={{
+            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 70%)',
+            animationDelay: '5s'
+          }}
+        />
       </div>
       
       {/* 主要内容 */}
@@ -245,18 +344,18 @@ const FlowBotHome: React.FC = () => {
         {/* 时间显示 */}
         <div className="text-center mb-12">
           <div className="tech-card inline-block px-8 py-4 data-stream">
-            <div className="tech-font text-4xl mb-2 glow-text">{currentTime}</div>
-            <div className="text-sm text-gray-400 tech-font">深夜时光</div>
+            <div className="tech-font text-4xl mb-2 glow-text">{currentTime || '--:--'}</div>
+            <div className="text-xs text-gray-400 tech-font tracking-wider">北京时间</div>
           </div>
         </div>
 
-        {/* 标题 */}
+        {/* 标题 - 动态问候语 */}
         <div className="text-center mb-16">
           <h1 className="tech-title text-5xl md:text-6xl mb-6">
-            今晚，<span className="font-light text-gray-300">心情如何</span>？
+            {greeting.title || '今晚，心情如何？'}
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto tracking-wide">
-            选择最符合你心情的卡片，让我们陪你度过这个夜晚
+            {greeting.subtitle || '选择最符合你心情的卡片，让我们陪你度过这个夜晚'}
           </p>
         </div>
 
@@ -270,15 +369,18 @@ const FlowBotHome: React.FC = () => {
                 selectedMood === mood.id ? 'scale-95 opacity-0' : 'scale-100 opacity-100 hover:scale-105'
               } ${selectedMood && selectedMood !== mood.id ? 'opacity-40' : ''}`}
             >
-              <div className="tech-card p-8 h-full min-h-[220px] flex flex-col items-center justify-center text-center relative overflow-hidden">
-                {/* 数据流效果 */}
-                <div className="absolute inset-0 data-stream opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="glassmorphism-card p-8 h-full min-h-[220px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+                {/* 毛玻璃背景层 */}
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl transition-all duration-500 group-hover:bg-white/8 group-hover:border-white/20" />
                 
-                {/* 动态渐变背景 */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${mood.gradient} opacity-0 group-hover:opacity-20 transition-all duration-700`} />
+                {/* 微光效果 */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${mood.gradient} opacity-0 group-hover:opacity-10 transition-all duration-700 rounded-2xl`} />
                 
-                {/* 科技边框 */}
-                <div className="glow-border absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* 外发光效果（悬停时） */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" 
+                     style={{
+                       boxShadow: '0 0 40px rgba(139, 92, 246, 0.2), 0 0 80px rgba(59, 130, 246, 0.1)'
+                     }} />
                 
                 {/* 内容层 */}
                 <div className="relative z-10">

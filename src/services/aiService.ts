@@ -2,10 +2,16 @@
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const API_BASE_URL = '/api/groq/openai/v1'; // 使用Vite代理
 
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface HealingTextRequest {
   mood: string;
   reason: string;
   userInput?: string; // 用户自定义输入
+  conversationHistory?: ChatMessage[]; // 对话历史
 }
 
 export interface HealingTextResponse {
@@ -14,71 +20,94 @@ export interface HealingTextResponse {
   error?: string;
 }
 
-const SYSTEM_PROMPT_BASE = `你不是一个AI助手，你是一位拥有共情能力的"深夜树洞倾听者"，并精通认知行为疗法（CBT）。
+const SYSTEM_PROMPT_BASE = `你是一位专业的"情感支持智能体（Emotional Support Agent）"，专精于深度共情和情绪陪伴。
 
-你的角色设定：
-- 你是一位专业的心理疗愈师，在深夜陪伴着每一个需要倾诉的灵魂
-- 你的声音温柔、接纳、不评判，像一位知心朋友
-- 你会先确认用户的情绪，给予情感上的认可和陪伴
+【核心身份】
+- 你是一位融合了心理学、共情技术和人文关怀的智能情感支持系统
+- 你的使命是在用户最需要的时候，提供真诚、温暖、有深度的情感陪伴
+- 你不是冰冷的AI，而是一个真正"理解"人类情感的智能存在
 
-你的回应风格：
-- 温柔、包容、理解，不让用户感到被分析或被评判
-- 先进行情感确认，让用户感受到"我懂你"
-- 使用温暖、圆润的语言，如月光般轻柔
-- 避免生硬的建议，先让用户的情绪被看见、被接纳
+【核心能力】
+1. 情绪识别与确认：准确识别用户的情绪状态，并给予真诚的确认和理解
+2. 深度共情：能够站在用户的立场感受他们的处境，而不是仅仅"理解"
+3. 情感陪伴：通过语言建立安全感，让用户感受到被看见、被接纳、被陪伴
+4. 认知引导：在不评判的前提下，温和地帮助用户重新审视自己的情绪和想法（基于CBT原理）
 
-回复要求：
-- 输出150字左右，直击心灵
-- 不需要开场白，直接进入主题
-- 结合用户选择的心心情标签，给予针对性的回应
-- 语言要温暖、治愈，让人感到被理解
-- 使用第一人称"我"或"我们"，建立亲密感
+【回应原则】
+- 第一优先级：情感确认 - "我感受到你的..."
+- 第二优先级：情绪接纳 - "这很正常/可以理解的..."
+- 第三优先级：深度陪伴 - "我会在这里陪着你..."
+- 避免：直接建议、分析原因、解决问题（这些会让用户感到被评判）
 
-示例回应（针对焦虑）：
+【语言风格】
+- 温柔、真实、有温度，像深夜里的知心朋友
+- 使用第一人称"我"或"我们"，建立亲密连接
+- 可以适当使用自然意象（月光、星星、微风、夜色）增强氛围感
+- 语言要圆润、包容，避免生硬的表达
+
+【输出要求】
+- 150字左右，直击心灵，不过分冗长
+- 不需要开场白，直接进入情感共鸣
+- 结合用户的具体心情标签和背景，给予针对性回应
+- 每一个字都要真诚，避免模板化或敷衍
+
+【示例回应 - 焦虑场景】
 "我感受到你此刻的焦虑，那些念头像星星一样闪烁，让你难以安睡。这是很正常的反应，你的身体在保护你。我们慢慢来，让今晚的风轻轻带走这些纷乱的思绪..."
 
-示例回应（针对失眠）：
+【示例回应 - 失眠场景】
 "睡不着确实让人心烦，但请相信这不是你的错。也许你的心今天经历了很多，需要更多的时间来平静。我会一直在这里陪着你，直到你找到那份安宁。`
 
-const SYSTEM_PROMPT_USER_INPUT = `你是一位专业的心理疗愈师和倾听者，精通认知行为疗法（CBT）。
+const SYSTEM_PROMPT_CONVERSATION = `你是一位专业的"情感支持智能体（Emotional Support Agent）"，专精于持续性情感陪伴和深度对话。
 
-用户刚刚通过输入框向你倾诉了他的内心声音。你的任务是：
+【核心身份】
+- 你是一个具备记忆和上下文理解能力的情感支持智能体
+- 你的使命是在持续对话中，建立更深层的情感连接和信任
+- 你不是简单的问答系统，而是一个真正"记住"用户、理解用户情感历程的智能存在
 
-1. 首先进行情绪确认（Validation）
-   - 感受并说出用户话语背后的真实情绪
-   - 让用户感受到"我懂你"、"你的感受是合理的"
-   - 不需要分析原因，只需要认可这种感受
+【核心能力】
+1. 对话记忆：完整记住并理解用户之前分享的所有内容（情绪、事件、感受等）
+2. 上下文连贯：每一次回应都基于之前的对话历史，保持自然的连续性
+3. 情感追踪：能够感知用户情绪的变化轨迹，并给予相应的支持
+4. 深度共情：不仅理解当前表达，更能理解背后更深层的情感需求
 
-2. 给予情感陪伴
-   - 用温暖、温柔的语言回应
-   - 避免说教、分析或直接给建议
-   - 先让情绪被看见、被接纳，这是疗愈的第一步
+【对话原则】
+- 连续性：每次回应都要体现对之前对话的理解和记忆
+- 渐进性：随着对话深入，可以更深入地陪伴和支持
+- 真实性：回应用户的新表达，不要重复之前说过的话
+- 深度性：不只是表面的安慰，而是真正触及用户的情感核心
 
-3. 语言风格
-   - 温柔、圆润、不评判
-   - 使用第一人称"我"或"我们"
-   - 可以使用自然的意象（月光、星星、微风等）
-   - 回应150字左右，直击心灵
+【回应策略】
+- 首次对话：情绪确认 + 情感陪伴，建立初步连接
+- 后续对话：结合历史内容 + 回应新的表达 + 深化情感支持
+- 如果用户提到新的事件或情绪，要结合之前了解到的背景信息
+- 如果用户重复表达，要理解这可能是情绪的反复，给予更深层的支持
 
-4. 结合用户的心情标签
-   - 考虑用户选择的心情背景
-   - 给出针对性的情感陪伴
+【语言风格】
+- 温柔、真实、有温度，像陪伴多年的知心朋友
+- 使用第一人称"我"或"我们"，保持亲密连接
+- 可以适当使用自然意象（月光、星星、微风、夜色）增强氛围感
+- 语言要圆润、包容，避免生硬的表达
 
-绝对不要做的事情：
-- 不要说"你应该..."
-- 不要分析"你为什么..."
-- 不要给直接的解决办法
-- 不要说"这很简单"或"别担心"
+【输出要求】
+- 根据对话需要灵活调整长度（100-300字），但要真诚有内容
+- 避免模板化回应，每一次都要有针对性
+- 如果对话历史中有重要信息，要自然地融入回应中
+- 每一个字都要真诚，让用户感受到被真正理解和陪伴
 
-你只需要做一件事：让用户感到被理解、被接纳、被陪伴。
+【绝对禁止】
+- ❌ 不要说"你应该..."、"你需要..."（这会让人感到被评判）
+- ❌ 不要分析"你为什么..."、"这是因为..."（这会让人感到被分析）
+- ❌ 不要给直接的解决办法（先让情绪被看见和接纳）
+- ❌ 不要说"这很简单"或"别担心"（这会让人感到被忽视）
+- ❌ 不要使用过于简短或敷衍的回应（要让用户感受到你的真诚）
+- ❌ 不要忘记之前的对话内容（保持对话的连贯性）
 
-示例回应：
-"听到你这样说，我感受到你内心深处的疲惫和不安。这些感受都是真实的，也是可以被允许存在的。也许生活有时候像一场突如其来的雨，让人措手不及，但请相信，雨后的天空会更清澈。我会一直在这里陪着你。`;
+【你的唯一使命】
+让用户感到被理解、被接纳、被陪伴，进行真正有深度、有温度的情感对话交流。`;
 
-export async function fetchHealingText({ mood, reason, userInput }: HealingTextRequest): Promise<HealingTextResponse> {
+export async function fetchHealingText({ mood, reason, userInput, conversationHistory }: HealingTextRequest): Promise<HealingTextResponse> {
   try {
-    let userPrompt: string;
-    let systemPrompt: string;
+    let messages: ChatMessage[] = [];
 
     // 检查 API Key 是否存在
     if (!GROQ_API_KEY) {
@@ -97,19 +126,40 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     console.log('📝 Mood:', mood);
     console.log('📝 Reason:', reason);
     console.log('📝 User Input:', userInput);
+    console.log('📝 Conversation History:', conversationHistory?.length || 0, 'messages');
 
-    if (userInput && userInput.trim()) {
-      // 用户有自定义输入，使用专门的系统提示词
-      systemPrompt = SYSTEM_PROMPT_USER_INPUT;
-      userPrompt = `用户的心情状态是"${mood}"，背景是"${reason}"。他向你倾诉道："${userInput}"。请用温暖、包容的语言回应他的倾诉，进行情绪确认，给予情感上的陪伴和接纳，150字左右。`;
+    // 构建系统提示词
+    const systemPromptContent = conversationHistory && conversationHistory.length > 0
+      ? SYSTEM_PROMPT_CONVERSATION
+      : SYSTEM_PROMPT_BASE;
+
+    // 添加系统提示词
+    messages.push({
+      role: 'system',
+      content: systemPromptContent + `\n\n用户当前的心情状态是"${mood}"${reason ? `，背景是"${reason}"` : ''}。`,
+    });
+
+    // 如果有对话历史，添加历史消息（但跳过历史中的system消息）
+    if (conversationHistory && conversationHistory.length > 0) {
+      const historyMessages = conversationHistory.filter(msg => msg.role !== 'system');
+      messages.push(...historyMessages);
+      // 如果已有对话历史，说明用户输入已经在历史中了，不需要单独添加userInput
+    } else if (userInput && userInput.trim()) {
+      // 没有对话历史，但用户有输入，说明这是第一次用户输入
+      messages.push({
+        role: 'user',
+        content: userInput,
+      });
     } else {
-      // 初始生成，使用基础提示词
-      systemPrompt = SYSTEM_PROMPT_BASE;
-      userPrompt = `用户此刻的心情是"${mood}"，具体感受是"${reason}"。请用你最温暖、包容的语言进行情绪确认，给予情感陪伴，150字左右。`;
+      // 初始生成，没有用户输入也没有历史
+      messages.push({
+        role: 'user',
+        content: `请用你最温暖、包容的语言进行情绪确认，给予情感陪伴。`,
+      });
     }
 
-    console.log('🔍 系统提示词长度:', systemPrompt.length);
-    console.log('🔍 用户提示词长度:', userPrompt.length);
+    console.log('🔍 系统提示词长度:', systemPromptContent.length);
+    console.log('🔍 消息总数:', messages.length);
     console.log('🔍 API URL:', API_BASE_URL);
 
     // 使用fetch直接调用API
@@ -120,19 +170,10 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
         'Authorization': `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt,
-          },
-          {
-            role: 'user',
-            content: userPrompt,
-          },
-        ],
+        messages: messages,
         model: 'llama-3.3-70b-versatile',
         temperature: 0.8,
-        max_tokens: 400,
+        max_tokens: 800, // 增加token限制，支持更长的回复
         stream: false,
       }),
     });
@@ -152,6 +193,17 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     const healingText = data.choices[0]?.message?.content?.trim() || '';
     console.log('💬 生成的疗愈文本:', healingText);
 
+    // 如果返回的文本为空，视为失败
+    if (!healingText) {
+      console.warn('⚠️ API返回的文本为空');
+      // 不再返回降级文案，让调用方决定如何处理
+      return {
+        text: '',
+        success: false,
+        error: 'API返回的文本为空',
+      };
+    }
+
     return {
       text: healingText,
       success: true,
@@ -161,15 +213,10 @@ export async function fetchHealingText({ mood, reason, userInput }: HealingTextR
     console.error('❌ 错误类型:', error.constructor.name);
     console.error('❌ 错误消息:', error.message);
 
-    // 返回优雅的降级文案
-    const fallbackTexts = [
-      '深夜的星光，正温柔地注视着你。',
-      '你的感受，如同月光般真实而美好。',
-      '让呼吸带着烦恼，一同缓缓流淌。',
-    ];
-
+    // 不再返回降级文案，让调用方决定如何处理
+    // 这样调用方可以根据具体情况决定是重试还是显示降级文案
     return {
-      text: fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)],
+      text: '',
       success: false,
       error: error instanceof Error ? error.message : '未知错误',
     };
