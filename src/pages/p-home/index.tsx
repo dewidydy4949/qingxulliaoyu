@@ -75,51 +75,51 @@ const emotionSubTags: Record<string, EmotionTag[]> = {
 const moodOptions: MoodOption[] = [
   {
     id: 'overthinking',
-    emoji: '🤯',
+    emoji: '🍂',
     title: '大脑停不下来',
     description: '思绪纷飞，无法平静',
-    gradient: 'from-purple-600 to-indigo-600',
-    iconColor: 'text-purple-400'
+    gradient: 'from-amber-100/10 to-orange-100/5',
+    iconColor: 'text-amber-200/80'
   },
   {
     id: 'heartache',
-    emoji: '💔',
+    emoji: '🥀',
     title: '心里有点难受',
     description: '情绪低落，需要安慰',
-    gradient: 'from-pink-600 to-rose-600',
-    iconColor: 'text-pink-400'
+    gradient: 'from-rose-100/10 to-pink-100/5',
+    iconColor: 'text-rose-200/80'
   },
   {
     id: 'insomnia',
-    emoji: '😵‍💫',
-    title: '失眠/睡不着',
+    emoji: '🌙',
+    title: '深夜睡不着',
     description: '辗转反侧，难以入眠',
-    gradient: 'from-blue-600 to-cyan-600',
-    iconColor: 'text-blue-400'
+    gradient: 'from-indigo-100/10 to-blue-100/5',
+    iconColor: 'text-indigo-200/80'
   },
   {
     id: 'sadness',
     emoji: '🌧️',
     title: '莫名低落',
     description: '情绪低迷，需要陪伴',
-    gradient: 'from-gray-600 to-slate-600',
-    iconColor: 'text-gray-400'
+    gradient: 'from-slate-100/10 to-gray-100/5',
+    iconColor: 'text-slate-200/80'
   },
   {
     id: 'anxiety',
-    emoji: '😰',
+    emoji: '🍃',
     title: '焦虑不安',
-    description: '心慌意乱，需要平静',
-    gradient: 'from-orange-600 to-red-600',
-    iconColor: 'text-orange-400'
+    description: '心慌意乱，寻找平静',
+    gradient: 'from-emerald-100/10 to-teal-100/5',
+    iconColor: 'text-emerald-200/80'
   },
   {
     id: 'exhausted',
-    emoji: '🫠',
+    emoji: '🕯️',
     title: '身心俱疲',
     description: '精疲力尽，需要充电',
-    gradient: 'from-green-600 to-teal-600',
-    iconColor: 'text-green-400'
+    gradient: 'from-stone-100/10 to-neutral-100/5',
+    iconColor: 'text-stone-200/80'
   }
 ];
 
@@ -240,59 +240,24 @@ const FlowBotHome: React.FC = () => {
 
   return (
     <div 
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 py-12 overflow-hidden"
-      style={{
-        background: 'radial-gradient(ellipse at center, #0a0e1a 0%, #050810 40%, #000000 100%)'
-      }}
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 py-12 overflow-hidden bg-[#10121a] transition-colors duration-[3000ms]"
     >
-      {/* 科技感网格背景 */}
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'gridMove 15s linear infinite'
-        }}
-      />
-      
-      {/* 科技感数据流效果 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={`stream-${i}`}
-            className="absolute"
-            style={{
-              left: `${(i * 12.5) + 5}%`,
-              top: '-10%',
-              width: '2px',
-              height: '20%',
-              background: 'linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.6), transparent)',
-              filter: 'blur(1px)',
-              animation: `dataFlow ${3 + (i % 3) * 0.5}s linear infinite`,
-              animationDelay: `${i * 0.5}s`
-            }}
-          />
-        ))}
-      </div>
+      {/* 极简柔和的环境光晕 */}
 
-      {/* 科技感光晕效果 */}
+      {/* 极简柔和的环境光晕 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full filter blur-3xl opacity-20"
+          className="absolute top-1/4 left-1/4 w-[40rem] h-[40rem] rounded-full filter blur-[100px] opacity-[0.4]"
           style={{
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)',
-            animation: 'glowPulse 4s ease-in-out infinite'
+            background: 'radial-gradient(circle, rgba(147, 197, 253, 0.6) 0%, transparent 70%)',
+            animation: 'glowPulse 8s ease-in-out infinite alternate'
           }}
         />
         <div 
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full filter blur-3xl opacity-15"
+          className="absolute bottom-1/4 right-1/4 w-[45rem] h-[45rem] rounded-full filter blur-[120px] opacity-[0.35]"
           style={{
-            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)',
-            animation: 'glowPulse 5s ease-in-out infinite',
-            animationDelay: '2s'
+            background: 'radial-gradient(circle, rgba(196, 181, 253, 0.5) 0%, transparent 70%)',
+            animation: 'glowPulse 10s ease-in-out infinite alternate-reverse',
           }}
         />
       </div>
@@ -341,21 +306,16 @@ const FlowBotHome: React.FC = () => {
       
       {/* 主要内容 */}
       <div className="relative z-10 w-full max-w-6xl">
-        {/* 时间显示 */}
-        <div className="text-center mb-12">
-          <div className="tech-card inline-block px-8 py-4 data-stream">
-            <div className="tech-font text-4xl mb-2 glow-text">{currentTime || '--:--'}</div>
-            <div className="text-xs text-gray-400 tech-font tracking-wider">北京时间</div>
+        {/* 时间显示与引导语 */}
+        <div className="text-center mb-20 animate-in delay-300 duration-1000">
+          <div className="inline-block px-10 py-4 mb-4">
+            <div className="tech-font text-[2.5rem] font-light tracking-widest text-white/90 drop-shadow-md mb-2">{currentTime || '--:--'}</div>
           </div>
-        </div>
-
-        {/* 标题 - 动态问候语 */}
-        <div className="text-center mb-16">
-          <h1 className="tech-title text-5xl md:text-6xl mb-6">
+          <h1 className="tech-font text-4xl md:text-5xl lg:text-5xl font-light text-white/90 mb-6 tracking-wide drop-shadow-lg p-2">
             {greeting.title || '今晚，心情如何？'}
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto tracking-wide">
-            {greeting.subtitle || '选择最符合你心情的卡片，让我们陪你度过这个夜晚'}
+          <p className="text-lg text-white/50 max-w-2xl mx-auto tracking-widest font-light">
+            {greeting.subtitle || '请慢慢深呼吸，选择当下最贴近你感受的卡片'}
           </p>
         </div>
 
@@ -369,9 +329,7 @@ const FlowBotHome: React.FC = () => {
                 selectedMood === mood.id ? 'scale-95 opacity-0' : 'scale-100 opacity-100 hover:scale-105'
               } ${selectedMood && selectedMood !== mood.id ? 'opacity-40' : ''}`}
             >
-              <div className="glassmorphism-card p-8 h-full min-h-[220px] flex flex-col items-center justify-center text-center relative overflow-hidden">
-                {/* 毛玻璃背景层 */}
-                <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl transition-all duration-500 group-hover:bg-white/8 group-hover:border-white/20" />
+              <div className="glassmorphism-card p-10 h-full min-h-[240px] flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:bg-white/[0.04] transition-colors duration-1000">
                 
                 {/* 微光效果 */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${mood.gradient} opacity-0 group-hover:opacity-10 transition-all duration-700 rounded-2xl`} />
@@ -394,12 +352,12 @@ const FlowBotHome: React.FC = () => {
                   </div>
                   
                   {/* 标题 */}
-                  <h3 className="text-xl font-semibold text-white mb-3 tech-font tracking-wide">
+                  <h3 className="text-xl font-normal text-white/90 mb-4 tech-font tracking-widest">
                     {mood.title}
                   </h3>
                   
                   {/* 描述 */}
-                  <p className="text-sm text-gray-300 leading-relaxed">
+                  <p className="text-sm text-white/50 font-light tracking-wide leading-relaxed">
                     {mood.description}
                   </p>
                 </div>
@@ -416,13 +374,10 @@ const FlowBotHome: React.FC = () => {
         </div>
 
         {/* 底部提示 */}
-        <div className="text-center">
-          <div className="tech-card inline-block px-6 py-3">
-            <p className="text-sm text-gray-400 tech-font tracking-wider animate-pulse">
-              <i className="fas fa-hand-pointer mr-2"></i>
-              点击卡片开始陪伴
-            </p>
-          </div>
+        <div className="text-center mt-12 opacity-50 hover:opacity-100 transition-opacity duration-1000">
+          <p className="text-sm text-white/40 font-light tracking-widest animate-pulse">
+            慢慢来，不用急
+          </p>
         </div>
       </div>
 

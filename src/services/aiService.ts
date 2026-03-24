@@ -1,6 +1,5 @@
-// 直接使用fetch调用API，避免SDK的CORS问题
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
-const API_BASE_URL = '/api/groq/openai/v1'; // 使用Vite代理
+// 将AI请求迁移到独立的Node.js后端隔离API Key
+import { api } from './api';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -109,20 +108,7 @@ export async function fetchHealingText({ mood, reason, userInput, conversationHi
   try {
     let messages: ChatMessage[] = [];
 
-    // 检查 API Key 是否存在
-    if (!GROQ_API_KEY) {
-      console.error('❌ Groq API Key 未配置！请在 .env 文件中设置 VITE_GROQ_API_KEY');
-      console.error('🔍 当前 GROQ_API_KEY 值:', GROQ_API_KEY);
-      console.error('🔍 import.meta.env.VITE_GROQ_API_KEY 值:', import.meta.env.VITE_GROQ_API_KEY);
-      return {
-        text: '网络有点拥挤，请重试',
-        success: false,
-        error: 'API Key 未配置',
-      };
-    }
-
-    console.log('🌟 API Key 已加载:', GROQ_API_KEY.substring(0, 20) + '...');
-    console.log('🌟 正在调用 Groq API...');
+    console.log('🌟 正在调用 Backend AI API...');
     console.log('📝 Mood:', mood);
     console.log('📝 Reason:', reason);
     console.log('📝 User Input:', userInput);
@@ -160,34 +146,10 @@ export async function fetchHealingText({ mood, reason, userInput, conversationHi
 
     console.log('🔍 系统提示词长度:', systemPromptContent.length);
     console.log('🔍 消息总数:', messages.length);
-    console.log('🔍 API URL:', API_BASE_URL);
-
-    // 使用fetch直接调用API
-    const response = await fetch(`${API_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        messages: messages,
-        model: 'llama-3.3-70b-versatile',
-        temperature: 0.8,
-        max_tokens: 800, // 增加token限制，支持更长的回复
-        stream: false,
-      }),
-    });
-
-    console.log('📡 API 响应状态:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ API 响应错误:', errorText);
-      throw new Error(`API request failed with status ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.json();
-    console.log('✅ Groq API 响应成功！');
+    // 直接调用后端隔离接口
+    const { data } = await api.post('/chat', { messages });
+    
+    console.log('✅ Backend API 响应成功！');
     console.log('📊 响应数据:', JSON.stringify(data, null, 2));
 
     const healingText = data.choices[0]?.message?.content?.trim() || '';

@@ -161,39 +161,24 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className={`relative min-h-screen flex items-center justify-center p-4 overflow-hidden ${styles.background || ''}`}>
-      {/* 高科技背景粒子效果 */}
-      <div className="particle-container">
-        {[...Array(30)].map((_, i) => (
-          <div 
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 6}s`,
-              animationDuration: `${6 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
-
-      {/* 高科技背景网格 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'gridMove 10s linear infinite'
-        }} />
-      </div>
-
-      {/* 光效装饰 */}
+    <div className={`relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-[#0b0f19] transition-colors duration-[3000ms]`}>
+      
+      {/* 冥想感环境光晕 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full filter blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/5 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '4s'}} />
+        <div 
+          className="absolute top-1/4 left-1/4 w-[40rem] h-[40rem] rounded-full filter blur-[100px] opacity-[0.4]"
+          style={{
+            background: 'radial-gradient(circle, rgba(147, 197, 253, 0.6) 0%, transparent 70%)',
+            animation: 'glowPulse 8s ease-in-out infinite alternate'
+          }}
+        />
+        <div 
+          className="absolute bottom-1/4 right-1/4 w-[45rem] h-[45rem] rounded-full filter blur-[120px] opacity-[0.35]"
+          style={{
+            background: 'radial-gradient(circle, rgba(196, 181, 253, 0.5) 0%, transparent 70%)',
+            animation: 'glowPulse 10s ease-in-out infinite alternate-reverse',
+          }}
+        />
       </div>
 
       {/* 主容器 */}

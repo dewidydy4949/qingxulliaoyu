@@ -318,21 +318,6 @@ const ImmersiveHealingPage: React.FC = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* 高科技动态背景 */}
       <DynamicBackground emotion={moodId} interactive={true} />
-      
-      {/* 粒子效果层 */}
-      <div className="particle-container">
-        {[...Array(60)].map((_, i) => (
-          <div 
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${10 + Math.random() * 8}s`
-            }}
-          />
-        ))}
-      </div>
 
       {/* 精致的声音控制按钮 */}
       <button
