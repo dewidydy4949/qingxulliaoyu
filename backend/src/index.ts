@@ -1,10 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import axios from 'axios';
 
 dotenv.config();
@@ -17,31 +16,25 @@ app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey_healing';
 
-let db: any;
+// Initialize Database (synchronous with better-sqlite3)
+const db = new Database('./database.sqlite');
+db.pragma('journal_mode = WAL');
 
-// Initialize Database
-async function initDb() {
-  db = await open({
-    filename: './database.sqlite',
-    driver: sqlite3.Database
-  });
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE,
-      password TEXT,
-      role TEXT DEFAULT 'user'
-    );
-    CREATE TABLE IF NOT EXISTS conversations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER,
-      messages TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(user_id) REFERENCES users(id)
-    );
-  `);
-}
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE,
+    password TEXT,
+    role TEXT DEFAULT 'user'
+  );
+  CREATE TABLE IF NOT EXISTS conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    messages TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
+`);
 
 // Authentication Middleware
 const authenticateToken = (req: any, res: any, next: any) => {
@@ -95,13 +88,15 @@ app.post('/api/register', async (req, res) => {
   const { email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword]);
-    const token = jwt.sign({ userId: result.lastID, email }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, userId: result.lastID, email });
+    const stmt = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
+    const result = stmt.run(email, hashedPassword);
+    const token = jwt.sign({ userId: result.lastInsertRowid, email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, userId: result.lastInsertRowid, email });
   } catch (err: any) {
-    if (err.code === 'SQLITE_CONSTRAINT') {
+    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE' || err.message?.includes('UNIQUE constraint')) {
       res.status(400).json({ error: 'Email already exists' });
     } else {
+      console.error('Register Error:', err);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
@@ -109,7 +104,7 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
   if (!user) return res.status(400).json({ error: 'User not found' });
 
   const validPassword = await bcrypt.compare(password, user.password);
@@ -119,20 +114,19 @@ app.post('/api/login', async (req, res) => {
   res.json({ token, userId: user.id, email: user.email, role: user.role });
 });
 
-app.get('/api/history', authenticateToken, async (req: any, res) => {
-  const history = await db.all('SELECT * FROM conversations WHERE user_id = ? ORDER BY created_at DESC', [req.user.userId]);
+app.get('/api/history', authenticateToken, (req: any, res) => {
+  const history = db.prepare('SELECT * FROM conversations WHERE user_id = ? ORDER BY created_at DESC').all(req.user.userId) as any[];
   res.json(history.map((h: any) => ({ ...h, messages: JSON.parse(h.messages) })));
 });
 
-app.post('/api/history', authenticateToken, async (req: any, res) => {
+app.post('/api/history', authenticateToken, (req: any, res) => {
   const { messages } = req.body;
-  const result = await db.run('INSERT INTO conversations (user_id, messages) VALUES (?, ?)', [req.user.userId, JSON.stringify(messages)]);
-  res.json({ success: true, id: result.lastID });
+  const stmt = db.prepare('INSERT INTO conversations (user_id, messages) VALUES (?, ?)');
+  const result = stmt.run(req.user.userId, JSON.stringify(messages));
+  res.json({ success: true, id: result.lastInsertRowid });
 });
 
 
-initDb().then(() => {
-  app.listen(port, () => {
-    console.log(`Backend Server listening at http://localhost:${port}`);
-  });
+app.listen(port, () => {
+  console.log(`Backend Server listening at http://localhost:${port}`);
 });
