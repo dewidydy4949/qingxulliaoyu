@@ -56,6 +56,11 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
+// Health Check
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // AI Chat Route
 app.post('/api/chat', async (req, res) => {
   try {
