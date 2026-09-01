@@ -10,6 +10,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
+const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
 
 app.use(cors());
 app.use(express.json());
@@ -65,7 +66,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-      model: 'llama-3.3-70b-versatile',
+      model: groqModel,
       messages,
       temperature: 0.8,
       max_tokens: 800,
